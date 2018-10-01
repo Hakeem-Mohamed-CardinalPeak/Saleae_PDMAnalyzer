@@ -21,9 +21,11 @@ void PDMAnalyzerResults::GenerateBubbleText( U64 frame_index, Channel& channel, 
 	ClearResultStrings();
 	Frame frame = GetFrame( frame_index );
 
-	char number_str[128];
-	AnalyzerHelpers::GetNumberString( frame.mData1, display_base, 8, number_str, 128 );
-	AddResultString( number_str );
+	char number_str1[128];
+	char number_str2[128];
+	AnalyzerHelpers::GetNumberString( frame.mData1, display_base, 8, number_str1, 128 );
+	AnalyzerHelpers::GetNumberString(frame.mData2, display_base, 8, number_str2, 128);
+	AddResultString( number_str1, ", ", number_str2 );
 }
 
 void PDMAnalyzerResults::GenerateExportFile( const char* file, DisplayBase display_base, U32 export_type_user_id )
@@ -33,7 +35,7 @@ void PDMAnalyzerResults::GenerateExportFile( const char* file, DisplayBase displ
 	U64 trigger_sample = mAnalyzer->GetTriggerSample();
 	U32 sample_rate = mAnalyzer->GetSampleRate();
 
-	file_stream << "Time [s],Value" << std::endl;
+	file_stream << "Time [s],Left,Right" << std::endl;
 
 	U64 num_frames = GetNumFrames();
 	for( U32 i=0; i < num_frames; i++ )
@@ -43,10 +45,13 @@ void PDMAnalyzerResults::GenerateExportFile( const char* file, DisplayBase displ
 		char time_str[128];
 		AnalyzerHelpers::GetTimeString( frame.mStartingSampleInclusive, trigger_sample, sample_rate, time_str, 128 );
 
-		char number_str[128];
-		AnalyzerHelpers::GetNumberString( frame.mData1, display_base, 8, number_str, 128 );
+		char number_str1[128];
+		AnalyzerHelpers::GetNumberString( frame.mData1, display_base, 8, number_str1, 128 );
 
-		file_stream << time_str << "," << number_str << std::endl;
+		char number_str2[128];
+		AnalyzerHelpers::GetNumberString(frame.mData2, display_base, 8, number_str2, 128);
+
+		file_stream << time_str << "," << number_str1 << "," << number_str2 << std::endl;
 
 		if( UpdateExportProgressAndCheckForCancel( i, num_frames ) == true )
 		{

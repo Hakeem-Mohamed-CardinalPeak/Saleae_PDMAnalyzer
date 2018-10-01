@@ -45,7 +45,7 @@ void PDMAnalyzer::WorkerThread()
 	U64 low_duration = 0;
 	U64 high_duration = 0;
 	mClock->AdvanceToNextEdge();
-	while (low_duration == 0 || abs(low_duration - high_duration) > (low_duration + high_duration) / 2) {
+	while (low_duration == 0 || abs((long long)low_duration - (long long)high_duration) > (low_duration + high_duration) / 2) {
 		mClock->AdvanceToNextEdge(); // Falling edge
 		low_start = mClock->GetSampleNumber();
 		mClock->AdvanceToNextEdge(); // Rising edge
@@ -56,7 +56,8 @@ void PDMAnalyzer::WorkerThread()
 
 	for( ; ; )
 	{
-		U8 data = 0;
+		U8 data_left = 0;
+		U8 data_right = 0;
 
 		U64 starting_sample = mClock->GetSampleNumber();
 
@@ -68,11 +69,15 @@ void PDMAnalyzer::WorkerThread()
 			mData->AdvanceToAbsPosition(mClock->GetSampleNumber());
 
 			if( mData->GetBitState() == BIT_HIGH )
-				data++;
+				data_left++;
 
 			// Next falling edge.
-			// TODO(tannewt): Support stereo data by reading the data here.
 			mClock->AdvanceToNextEdge();
+
+			mData->AdvanceToAbsPosition(mClock->GetSampleNumber());
+
+			if (mData->GetBitState() == BIT_HIGH)
+				data_right++;
 
 			// Next rising edge.
 			mClock->AdvanceToNextEdge();
@@ -81,7 +86,8 @@ void PDMAnalyzer::WorkerThread()
 
 		//we have a byte to save.
 		Frame frame;
-		frame.mData1 = data;
+		frame.mData1 = data_left;
+		frame.mData2 = data_right;
 		frame.mFlags = 0;
 		frame.mStartingSampleInclusive = starting_sample;
 		frame.mEndingSampleInclusive = mClock->GetSampleNumber();

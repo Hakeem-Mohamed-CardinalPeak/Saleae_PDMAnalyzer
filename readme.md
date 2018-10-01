@@ -1,7 +1,8 @@
 # Saleae PDM Analyzer
 This analyzer is useful for PDM streams. It counts the number of 1s present on
-the data line for a given clock's rising edges. In PDM terms, that means it only
-does the first channel. It doesn't handle stereo currently.
+the data line for a given clock's rising and falling edges.  Within the GUI left/right 
+channel values are separated by commas, and when exported as CSV they are saved
+as separate columns.
 
 It does its best to start with the clock signal. However, it may be shifted
 against the samples you receive in your code. Changing the bits per sample
