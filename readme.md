@@ -9,6 +9,13 @@ against the samples you receive in your code. Changing the bits per sample
 configuration sample to 1 can make it easy to read individual bits instead of the
 ones count for a set of bits.
 
+# Python Scripts - smash_csv.py, handle_pdm.py
+These scripts process the PDM data exported as CSV from Logic so that they can be imported into 
+Audacity for analysis.  smash_csv will take two separate CSV files (each containing 
+left/right PDM channel data) and smash them into a single CSV file with 4 channels.  handle_pdm
+will then take that smashed CSV data, run it through a simple CIC filter, and output a 4-channel
+raw PCM binary that can be imported into Audacity.
+
 # Using
 
 ### Compiling on Windows
